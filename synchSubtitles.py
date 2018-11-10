@@ -4,8 +4,6 @@
 import re, time
 from datetime import datetime, timedelta
 
-dec_time = '00:00:28,384'
-
 class Synchronize():
     """A class that synchronizes the time"""
     
@@ -37,30 +35,34 @@ class Synchronize():
         return self.to_string(sub)
 
 
-file_object = open('subtitle.srt')
+def application(subtitle, delta):
+    # Create time regex.
+    timeRegex = re.compile(r'\d{2}:\d{2}:\d{2},\d{3}')
+    time_list = timeRegex.findall(subtitle)
+
+    modification = []
+    for time in time_list:
+        synch = Synchronize(time)
+        modified = synch.decrement(delta)
+        old_new = []
+        old_new.append(time)
+        old_new.append(modified)
+        modification.append(old_new)
+
+    result = subtitle
+    for pair in modification:
+        precise = re.compile(pair[0])
+        result = precise.sub(pair[1], result)
+        
+    filename = 'result.srt'
+    file_object = open(filename, 'w')
+    file_object.write(result)
+    file_object.close()
+
+    
+dec_time = '00:00:28,384'
+file_object = open('test.srt')
 subtitle = file_object.read()
 file_object.close()
-  
-# Create time regex.
-timeRegex = re.compile(r'\d{2}:\d{2}:\d{2},\d{3}')
 
-time_list = timeRegex.findall(subtitle)
-
-modification = []
-for time in time_list:
-    synch = Synchronize(time)
-    modified = synch.decrement(dec_time)
-    old_new = []
-    old_new.append(time)
-    old_new.append(modified)
-    modification.append(old_new)
-
-result = subtitle
-for pair in modification:
-    precise = re.compile(pair[0])
-    result = precise.sub(pair[1], result)
-    
-filename = 'result.srt'
-file_object = open(filename, 'w')
-file_object.write(result)
-file_object.close()
+application(subtitle, dec_time)
