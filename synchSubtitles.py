@@ -46,9 +46,7 @@ def application(subtitle, delta):
     for time in time_list:
         synch = Synchronize(time)
         modified = synch.decrement(delta)
-        old_new = []
-        old_new.append(time)
-        old_new.append(modified)
+        old_new = (time, modified)
         modification.append(old_new)
 
     result = subtitle
