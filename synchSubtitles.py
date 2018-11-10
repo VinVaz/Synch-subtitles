@@ -12,6 +12,7 @@ class Synchronize():
         self.subtitle_time = subtitle_time
     
     def to_delta(self, my_time):
+        """Convert the given time to delta object"""
         t = datetime.strptime(my_time, "%H:%M:%S,%f")
         delta_format = timedelta(
                                 hours=t.hour,
@@ -22,6 +23,7 @@ class Synchronize():
         return delta_format
     
     def to_string(self, delta_time):
+        """Convert delta time object to formatted string"""
         my_time = (datetime.min + delta_time)
         str = datetime.strftime(my_time, "%H:%M:%S,%f")
         return str[:-3]
@@ -59,7 +61,7 @@ def application(subtitle, delta):
     file_object.write(result)
     file_object.close()
 
-    
+
 dec_time = '00:00:28,384'
 file_object = open('test.srt')
 subtitle = file_object.read()
