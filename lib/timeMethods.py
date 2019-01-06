@@ -1,11 +1,11 @@
 #! python3
-# synchSubtitles.py - Change subtitle's time to synchronize with the audio.
+# timeMethods.py - Apply synchonization methods.
 
-import re, time
+import re
 from datetime import datetime, timedelta
 
 class Synchronize():
-    """A class that synchronizes the time"""
+    """A class containing synchronization methods"""
     
     def __init__(self, subtitle_time):
         """Initialize attributes of a synchronizer"""
@@ -37,40 +37,16 @@ class Synchronize():
         return self.to_string(sub)
     
     def add(self, base):
+        """Check if time needs to be incremented or decremented apply the
+        operation needed"""
         baseRegex = re.compile(r'([-+]?)\s?(\d{2}:\d{2}:\d{2},\d{3})')
         mo = baseRegex.search(base)
+        if mo == None:
+            raise Exception('Wrong time format')
+        
         signal = mo.group(1)
         time = mo.group(2)
         if signal == "-":
             return self.decrement(time)
         else:
-            return self.increment(time)    
-
-def application(subtitle, delta):
-    # Create time regex.
-    timeRegex = re.compile(r'\d{2}:\d{2}:\d{2},\d{3}')
-    time_list = timeRegex.findall(subtitle)
-
-    modification = []
-    for time in time_list:
-        synch = Synchronize(time)
-        modified = synch.add(delta)
-        old_new = (time, modified)
-        modification.append(old_new)
-
-    result = subtitle
-    for (old_time, new_time) in modification:
-        oldTimeRegex = re.compile(old_time)
-        result = oldTimeRegex.sub(new_time, result)
-        
-    filename = 'result.srt'
-    file_object = open(filename, 'w')
-    file_object.write(result)
-    file_object.close()
-
-delta = '- 00:00:28,384'
-file_object = open('test.srt')
-subtitle = file_object.read()
-file_object.close()
-
-application(subtitle, delta)
+            return self.increment(time)
